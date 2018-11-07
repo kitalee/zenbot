@@ -11,6 +11,8 @@ module.exports = function (cb) {
   var config = {}
   var overrides = {}
 
+  module.exports.debug = args.debug
+
   // 1. load conf overrides file if present
   if(!_.isUndefined(args.conf)){
     try {
@@ -45,7 +47,7 @@ module.exports = function (cb) {
     authStr += '@'
 
     // authMechanism could be a conf.js parameter to support more mongodb authentication methods
-    authMechanism = 'DEFAULT'
+    authMechanism = zenbot.conf.mongo.authMechanism || 'DEFAULT'
   }
 
   if (zenbot.conf.mongo.connectionString) {
