@@ -33,6 +33,7 @@ module.exports = function api () {
 
     app.get('/', function (req, res) {
       app.locals.moment = moment
+      app.locals.deposit = tradeObject.options.deposit
       let datas = JSON.parse(JSON.stringify(objectWithoutKey(tradeObject, 'options'))) // deep copy to prevent alteration
       res.render('dashboard', datas)
     })
@@ -45,7 +46,7 @@ module.exports = function api () {
       res.sendFile(path.join(__dirname+'../../../stats/index.html'))
     })
 
-    if (ip) {
+    if (ip && ip !== '0.0.0.0') {
       app.listen(port, ip)
       tradeObject.url = ip + ':' + port + '/'
     } else {

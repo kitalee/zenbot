@@ -3,8 +3,9 @@ var minimist = require('minimist')
   // eslint-disable-next-line no-unused-vars
   , colors = require('colors')
   , moment = require('moment')
-  , engineFactory = require('../lib/engine')
   , objectifySelector = require('../lib/objectify-selector')
+  , exchangeService = require('../lib/services/exchange-service')
+  , { formatCurrency } = require('../lib/format')
 
 module.exports = function (program, conf) {
   program
@@ -32,14 +33,22 @@ module.exports = function (program, conf) {
       so.selector = s.selector
       so.debug = cmd.debug
       so.mode = 'live'
-      var engine = engineFactory(s, conf)
       function balance () {
-        s.exchange.getBalance(s, function (err, balance) {
+        var exchangeServiceInstance = exchangeService(conf)
+        var exchange = exchangeServiceInstance.getExchange()
+
+        var exchangeName = exchange.name // TODO: Refactor all exchanges to be in the format of the stub.exchange, so we can use getName() here.
+        if (exchange === undefined) {
+          console.error('\nSorry, couldn\'t find an exchange named [' + exchangeName + '].')
+          process.exit(1)
+        }
+
+        exchange.getBalance(s, function (err, balance) {
           if (err) throw err
-          s.exchange.getQuote(s, function (err, quote) {
+          exchange.getQuote(s, function (err, quote) {
             if (err) throw err
             
-            var bal = moment().format('YYYY-MM-DD HH:mm:ss').grey + ' ' + engine.formatCurrency(quote.ask, true, true, false) + ' ' + (s.product_id).grey + '\n'
+            var bal = moment().format('YYYY-MM-DD HH:mm:ss').grey + ' ' + formatCurrency(quote.ask, s.currency, true, true, false) + ' ' + (s.product_id).grey + '\n'
             bal += moment().format('YYYY-MM-DD HH:mm:ss').grey + ' Asset: '.grey + balance.asset.white + ' Available: '.grey + n(balance.asset).subtract(balance.asset_hold).value().toString().yellow + '\n'
             bal += moment().format('YYYY-MM-DD HH:mm:ss').grey + ' Asset Value: '.grey + n(balance.asset).multiply(quote.ask).value().toString().white + '\n'
             bal += moment().format('YYYY-MM-DD HH:mm:ss').grey + ' Currency: '.grey + balance.currency.white + ' Available: '.grey + n(balance.currency).subtract(balance.currency_hold).value().toString().yellow + '\n'
@@ -47,10 +56,10 @@ module.exports = function (program, conf) {
             console.log(bal)
             
             if (so.calculate_currency) {
-              s.exchange.getQuote({'product_id': s.asset + '-' + so.calculate_currency}, function (err, asset_quote) {
+              exchange.getQuote({'product_id': s.asset + '-' + so.calculate_currency}, function (err, asset_quote) {
                 if (err)  throw err
 
-                s.exchange.getQuote({'product_id': s.currency + '-' + so.calculate_currency}, function (err, currency_quote) {
+                exchange.getQuote({'product_id': s.currency + '-' + so.calculate_currency}, function (err, currency_quote) {
                   if (err)  throw err
                   var asset_total = balance.asset * asset_quote.bid
                   var currency_total = balance.currency * currency_quote.bid
