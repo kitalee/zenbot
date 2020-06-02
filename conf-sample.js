@@ -110,18 +110,18 @@ c.therock.secret = 'YOUR-SECRET'
 // Optional stop-order triggers:
 
 // sell if price drops below this % of bought price (0 to disable)
-c.sell_stop_pct = 0.5
+c.sell_stop_pct = 0.3
 // buy if price surges above this % of sold price (0 to disable)
-c.buy_stop_pct = 0.3
+c.buy_stop_pct = 0.2
 // enable trailing sell stop when reaching this % profit (0 to disable)
 c.profit_stop_enable_pct = 5
 // maintain a trailing stop this % below the high-water mark of profit
-c.profit_stop_pct = 0.5
+c.profit_stop_pct = 0.3
 
 // Order execution rules:
 c.neutral_rate = 'auto'
 // avoid trading at a slippage above this pct
-c.max_slippage_pct = 0.03
+c.max_slippage_pct = 0.05
 // buy with this % of currency balance (WARNING : sim won't work properly if you set this value to 100)
 c.buy_pct = 99
 // sell with this % of asset balance (WARNING : sim won't work properly if you set this value to 100)
@@ -131,7 +131,7 @@ c.order_adjust_time = 5000
 // avoid selling at a loss below this pct set to 0 to ensure selling at a higher price...
 c.max_sell_loss_pct = 99
 // avoid buying at a loss above this pct set to 0 to ensure buying at a lower price...
-c.max_buy_loss_pct = 1
+c.max_buy_loss_pct = 99
 // ms to poll order status
 c.order_poll_time = 5000
 // ms to wait for settlement (after an order cancel)
@@ -166,7 +166,7 @@ c.rsi_periods = 14
 // period to record balances for stats
 c.balance_snapshot_period = '15m'
 // avg. amount of slippage to apply to sim trades
-c.avg_slippage_pct = 0.04
+c.avg_slippage_pct = 0.03
 // time to leave an order open, default to 1 day (this feature is not supported on all exchanges, currently: GDAX)
 c.cancel_after = 'day'
 // load and use previous trades for stop-order triggers and loss protection (live/paper mode only)
